@@ -1,0 +1,11 @@
+@import './../../styles/shared-style.scss';
+
+// :host{
+//     background-color: #094e64;
+// }
+
+::ng-deep {
+    body .ui-multiselect-panel {
+        width: 200px;
+    }
+}
