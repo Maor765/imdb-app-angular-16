@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { isNumeric } from '../helpers/helpers.utils';
 import { ImdbApiService } from './imdb-api.service';
 import { OmdbBaseService } from './omdb-base.service';
+import { tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -13,6 +14,22 @@ export class MoviesIMDBService extends OmdbBaseService {
     protected override imdbApiService: ImdbApiService
   ) {
     super(http, imdbApiService, 'movie', 'movie-data2');
+    this.testApi().subscribe();
+  }
+
+  testApi() {
+    let headers = new HttpHeaders()
+      .set('content-type', 'application/json')
+      .set('Access-Control-Allow-Origin', '*');
+    return this.http
+      .get('https://nodejs-express-monogo-typescript.onrender.com/employee', {
+        headers,
+      })
+      .pipe(
+        tap((res) => {
+          console.log('employees:', res);
+        })
+      );
   }
 
   getNameFromFile(fileName: string) {
