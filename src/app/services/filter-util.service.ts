@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {sortBy} from 'lodash';
-import { OmdbMovie } from '../interfaces/omdb.movie.interface';
+import { ImdbItem } from '../interfaces/imdb-item.interface';
 
 export interface ISortField{
   label: string;
@@ -44,11 +44,11 @@ export class FilterUtilService {
 
   }
 
-  sortBy(selectedSort: ISortField, moviesData: OmdbMovie[]){
+  sortBy(selectedSort: ISortField, moviesData: ImdbItem[]){
     return sortBy(moviesData,[selectedSort.field]);
   }
 
-  getAllGenres(selectedGenre: any[], moviesData: OmdbMovie[]){
+  getAllGenres(selectedGenre: any[], moviesData: ImdbItem[]){
     const res = [];
     moviesData.forEach( movie => {
         let found = true;

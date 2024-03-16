@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { ImdbApiService } from './imdb-api.service';
+import { OmdbApiService } from './omdb-api.service';
 import { OmdbBaseService } from './omdb-base.service';
+import { ImdbApiService } from './imdb-api.service';
 
 @Injectable({
   providedIn: 'root',
@@ -10,9 +11,10 @@ export class TvsIMDBService extends OmdbBaseService {
 
   constructor(
     protected override http: HttpClient,
-    protected override imdbApiService: ImdbApiService
+    protected override omdbApiService: OmdbApiService,
+    protected override imdbApiService: ImdbApiService,
   ) {
-    super(http, imdbApiService, 'series', 'tv-data2');
+    super(http, omdbApiService, 'series', 'tv-data2', imdbApiService);
   }
 
   getNameFromFile(fileName: string) {

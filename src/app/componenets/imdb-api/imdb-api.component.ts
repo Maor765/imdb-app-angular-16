@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ImdbApiService } from 'src/app/services/imdb-api.service';
+import { OmdbApiService } from 'src/app/services/omdb-api.service';
 
 @Component({
   selector: 'app-imdb-api',
@@ -11,7 +11,7 @@ export class ImdbApiComponent implements OnInit {
   apiKey = "";
   display: boolean = false;
 
-  constructor(private imdbApiService:ImdbApiService) { }
+  constructor(private imdbApiService:OmdbApiService) { }
 
   ngOnInit(): void {
   }

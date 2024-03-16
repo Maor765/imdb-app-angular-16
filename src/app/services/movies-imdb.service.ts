@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { isNumeric } from '../helpers/helpers.utils';
-import { ImdbApiService } from './imdb-api.service';
+import { OmdbApiService } from './omdb-api.service';
 import { OmdbBaseService } from './omdb-base.service';
-import { tap } from 'rxjs';
+import { ImdbApiService } from './imdb-api.service';
 
 @Injectable({
   providedIn: 'root',
@@ -11,25 +11,10 @@ import { tap } from 'rxjs';
 export class MoviesIMDBService extends OmdbBaseService {
   constructor(
     protected override http: HttpClient,
-    protected override imdbApiService: ImdbApiService
+    protected override omdbApiService: OmdbApiService,
+    protected override imdbApiService: ImdbApiService,
   ) {
-    super(http, imdbApiService, 'movie', 'movie-data2');
-    this.testApi().subscribe();
-  }
-
-  testApi() {
-    let headers = new HttpHeaders()
-      .set('content-type', 'application/json')
-      .set('Access-Control-Allow-Origin', '*');
-    return this.http
-      .get('https://nodejs-express-monogo-typescript.onrender.com/employee', {
-        headers,
-      })
-      .pipe(
-        tap((res) => {
-          console.log('employees:', res);
-        })
-      );
+    super(http, omdbApiService, 'movie', 'movie-data2',imdbApiService);
   }
 
   getNameFromFile(fileName: string) {

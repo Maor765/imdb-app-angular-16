@@ -1,27 +1,36 @@
-import { HttpClient } from '@angular/common/http';
 import * as moment from 'moment';
-import { Subject } from 'rxjs';
+import { BehaviorSubject, Subject, filter, firstValueFrom, tap } from 'rxjs';
 import { OmdbMovie } from '../interfaces/omdb.movie.interface';
-import { ImdbApiService } from './imdb-api.service';
+import { OmdbApiService } from './omdb-api.service';
 import { FileSystemFileEntry } from 'ngx-file-drop';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { ImdbApiService } from './imdb-api.service';
+import { ImdbItem } from '../interfaces/imdb-item.interface';
 
 export abstract class OmdbBaseService {
-  data: Array<OmdbMovie>;
+  data: Array<ImdbItem>;
   allGenres: { value: string }[] = [];
   nameMap: Map<string, any> = new Map();
   fetchingDataStatus = new Subject<boolean>();
+  data$ = new BehaviorSubject<Array<ImdbItem>>(null);
 
   constructor(
     protected http: HttpClient,
-    protected imdbApiService: ImdbApiService,
+    protected omdbApiService: OmdbApiService,
     private searchType: string,
-    private localStorageKey: string
+    private localStorageKey: string,
+    protected imdbApiService: ImdbApiService,
   ) {
     if (localStorage.getItem(this.localStorageKey)) {
       this.data = [];
       this.data = JSON.parse(localStorage.getItem(this.localStorageKey));
       this.getAllGenres();
     }
+    this.imdbApiService.get().subscribe(res => {
+      this.data = res.filter( r=> r.Type === searchType);
+      this.data$.next(this.data);
+      this.getAllGenres();
+    })
   }
 
   abstract getNameFromFile(fileName: string);
@@ -73,16 +82,17 @@ export abstract class OmdbBaseService {
   }
 
   getOmdbUrl(name: string) {
-    let url = this.imdbApiService.getOmdbMainUrl();
+    let url = this.omdbApiService.getOmdbMainUrl();
     return `${url}&type=${this.searchType}&t=${name}`;
   }
 
   search(tvName: string) {
-    return this.http.get(this.getOmdbUrl(tvName)).toPromise();
+    return firstValueFrom(this.http.get(this.getOmdbUrl(tvName)));
   }
 
   saveData() {
-    localStorage.setItem(this.localStorageKey, JSON.stringify(this.data));
+    this.imdbApiService.createAll(this.data);
+    // localStorage.setItem(this.localStorageKey, JSON.stringify(this.data));
   }
 
   clearData() {

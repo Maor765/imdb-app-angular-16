@@ -87,6 +87,14 @@
             style="margin-right: 0.25em"
             (click)="goToLink(movie.imdbID)"
           ></button>
+          <button
+          pButton
+          type="button"
+          label="Delete"
+          icon="pi pi-trash pi-delete"
+          style="margin-right: 0.25em"
+          (click)="remove(movie._id)"
+        ></button>
         </p-footer>
       </p-card>
     </div>

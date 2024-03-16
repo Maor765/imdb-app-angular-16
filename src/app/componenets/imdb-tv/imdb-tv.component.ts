@@ -4,10 +4,12 @@ import {
   FileSystemFileEntry,
 } from 'ngx-file-drop';
 import { take } from 'rxjs/operators';
-import { OmdbMovie } from 'src/app/interfaces/omdb.movie.interface';
 import { FilterUtilService, ISortField } from 'src/app/services/filter-util.service';
 import { TvsIMDBService } from 'src/app/services/tvs-imdb.service';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { ImdbItem } from 'src/app/interfaces/imdb-item.interface';
+import { ImdbApiService } from 'src/app/services/imdb-api.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-imdb-tv',
@@ -21,18 +23,22 @@ export class ImdbTvComponent implements OnInit, OnDestroy {
   isAsc:boolean  = false;
   filterData;
 
-  data: Array<OmdbMovie> = [];
+  data: Array<ImdbItem> = [];
 
   constructor(public tvsService: TvsIMDBService,
     public spinner: NgxSpinnerService,
+    public imdbApiService: ImdbApiService,
     public filterUtilService:FilterUtilService) {}
 
   ngOnInit() {
-    this.data = this.tvsService.data;
+    // this.data = this.tvsService.data;
+    this.tvsService.data$.subscribe(res => {
+      this.data = res;
+    })
   }
 
   ngOnDestroy(){
-    this.tvsService.saveData(); 
+    // this.tvsService.saveData(); 
   }
 
   public files: NgxFileDropEntry[] = [];
@@ -101,5 +107,10 @@ export class ImdbTvComponent implements OnInit, OnDestroy {
     } else {
       this.data = this.tvsService.data;
     }
+  }
+
+  async remove(id: string) {
+    let res = await firstValueFrom(this.imdbApiService.delete(id));
+    this.data = this.data.filter(d => d._id !== id); // change to remove by index
   }
 }
