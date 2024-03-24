@@ -14,7 +14,7 @@ export class TvsIMDBService extends OmdbBaseService {
     protected override omdbApiService: OmdbApiService,
     protected override imdbApiService: ImdbApiService,
   ) {
-    super(http, omdbApiService, 'series', 'tv-data2', imdbApiService);
+    super(http, omdbApiService, 'series', imdbApiService);
   }
 
   getNameFromFile(fileName: string) {

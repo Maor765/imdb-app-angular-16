@@ -1,34 +1,26 @@
 import * as moment from 'moment';
-import { BehaviorSubject, Subject, filter, firstValueFrom, tap } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, take } from 'rxjs';
 import { OmdbMovie } from '../interfaces/omdb.movie.interface';
 import { OmdbApiService } from './omdb-api.service';
 import { FileSystemFileEntry } from 'ngx-file-drop';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { ImdbApiService } from './imdb-api.service';
 import { ImdbItem } from '../interfaces/imdb-item.interface';
+import { ImdbRequest } from '../interfaces/imdb-request.interface';
 
 export abstract class OmdbBaseService {
-  data: Array<ImdbItem>;
   allGenres: { value: string }[] = [];
-  nameMap: Map<string, any> = new Map();
-  fetchingDataStatus = new Subject<boolean>();
   data$ = new BehaviorSubject<Array<ImdbItem>>(null);
 
   constructor(
     protected http: HttpClient,
     protected omdbApiService: OmdbApiService,
     private searchType: string,
-    private localStorageKey: string,
     protected imdbApiService: ImdbApiService,
   ) {
-    if (localStorage.getItem(this.localStorageKey)) {
-      this.data = [];
-      this.data = JSON.parse(localStorage.getItem(this.localStorageKey));
-      this.getAllGenres();
-    }
-    this.imdbApiService.get().subscribe(res => {
-      this.data = res.filter( r=> r.Type === searchType);
-      this.data$.next(this.data);
+    this.imdbApiService.get().pipe(take(1)).subscribe(res => {
+      const data = res.filter( r=> r.Type === searchType);
+      this.data$.next(data);
       this.getAllGenres();
     })
   }
@@ -37,7 +29,7 @@ export abstract class OmdbBaseService {
 
   getAllGenres() {
     const allGenresMap: Map<string, any> = new Map();
-    this.data.forEach((d) => {
+    this.data$.value.forEach((d) => {
       d.genreList?.forEach((genre) => {
         if (!allGenresMap.has(genre)) {
           allGenresMap.set(genre, true);
@@ -49,22 +41,54 @@ export abstract class OmdbBaseService {
     }));
   }
 
-  extractNames(fileEntry: FileSystemFileEntry) {
-    const movie = this.getNameFromFile(fileEntry.name);
-    if (movie && !this.nameMap.has(movie)) {
-      this.nameMap.set(movie, true);
-    }
+  extractNames(fileEntrys: FileSystemFileEntry[]) {
+    const nameMap: Map<string, any> = new Map();
+
+    fileEntrys.forEach(fileEntry => {
+      const movie = this.getNameFromFile(fileEntry.name);
+      if (movie && !nameMap.has(movie)) {
+        nameMap.set(movie, true);
+      }
+    })
+
+    return nameMap;
   }
 
-  getData() {
+  getAllNeededProps(item: OmdbMovie) {
+    const {
+      Title,
+      Year,
+      Released,
+      Runtime,
+      Genre,
+      Plot,
+      Poster,
+      imdbRating,
+      imdbID,
+      Type,
+    } = item;
+    return { Title,
+      Year,
+      Released,
+      Runtime,
+      Genre,
+      Plot,
+      Poster,
+      imdbRating,
+      imdbID,
+      Type,};
+  }
+
+  getData(fileEntry: FileSystemFileEntry[]) {
     let apiCallCount = 0;
-    this.data = [];
-    this.nameMap.forEach((value, key) => {
+    const data = [];
+    const nameMap = this.extractNames(fileEntry)
+    nameMap.forEach((value, key) => {
       this.search(key).then((res: OmdbMovie) => {
         apiCallCount++;
         if (res.Response === 'True') {
-          this.data.push({
-            ...res,
+          data.push({
+            ...this.getAllNeededProps(res),
             genreList: res.Genre.split(',').map((elm) => elm.replace(' ', '')),
             runtimeMins: Number(res.Runtime.replace('min', '')),
             releaseDate: moment(res.Released).format('YYYY-MM-DD'),
@@ -72,10 +96,9 @@ export abstract class OmdbBaseService {
         } else {
           console.log('issue with tv, no results: ', key, res);
         }
-        if (apiCallCount === this.nameMap.size) {
+        if (apiCallCount === nameMap.size) {
           this.getAllGenres();
-          this.saveData();
-          this.fetchingDataStatus.next(true);
+          this.saveData(data);
         }
       });
     });
@@ -90,13 +113,25 @@ export abstract class OmdbBaseService {
     return firstValueFrom(this.http.get(this.getOmdbUrl(tvName)));
   }
 
-  saveData() {
-    this.imdbApiService.createAll(this.data);
-    // localStorage.setItem(this.localStorageKey, JSON.stringify(this.data));
+  saveData(data: Array<ImdbRequest>) {
+    this.imdbApiService.createAll(data).pipe(take(1)).subscribe(res => {
+      const data:ImdbItem[] = this.data$.value || [] ;
+      data.push(...res);
+      this.data$.next(data);
+    });
+  }
+
+  delete(id: string) {
+    this.imdbApiService.delete(id).pipe(take(1)).subscribe(res => {
+      let data = this.data$.value;
+      data = data.filter(d => d._id !== id);
+      this.data$.next(data);
+    });
   }
 
   clearData() {
-    this.data = [];
-    localStorage.removeItem(this.localStorageKey);
+    this.imdbApiService.deleteMany(this.searchType).pipe(take(1)).subscribe(res => {
+      this.data$.next([]);
+    });
   }
 }

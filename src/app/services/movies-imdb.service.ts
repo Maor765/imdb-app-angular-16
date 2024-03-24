@@ -14,7 +14,7 @@ export class MoviesIMDBService extends OmdbBaseService {
     protected override omdbApiService: OmdbApiService,
     protected override imdbApiService: ImdbApiService,
   ) {
-    super(http, omdbApiService, 'movie', 'movie-data2',imdbApiService);
+    super(http, omdbApiService, 'movie',imdbApiService);
   }
 
   getNameFromFile(fileName: string) {

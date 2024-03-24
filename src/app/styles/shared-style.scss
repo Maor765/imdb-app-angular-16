@@ -53,5 +53,12 @@
 @media (max-width: 480px) {
   .header-actions {
     display: inline-block;
+    button.clear-data {
+      display: none;
+    }
+    
+  }
+  .card-container {
+    display: list-item;
   }
 }

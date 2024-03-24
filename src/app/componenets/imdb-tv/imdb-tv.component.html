@@ -3,10 +3,11 @@
     <div
       style="display: flex; justify-content: space-around; align-items: center"
     >
-      Count : {{ data?.length }}
+      Count : {{ viewData?.length }}
     </div>
     <button
       pButton
+      class="clear-data"
       type="button"
       label="Clear data"
       icon="pi pi-trash"
@@ -58,10 +59,10 @@
     </ngx-file-drop>
   </div>
 
-  <ng-container *ngIf="data?.length > 0">
+  <ng-container *ngIf="viewData?.length > 0">
     <div class="card-container">
       <p-card
-        *ngFor="let tv of data; let i = index"
+        *ngFor="let tv of viewData; let i = index"
         [header]="tv.Title"
         [subheader]="tv.Released | date"
         [style]="{ width: '360px' }"

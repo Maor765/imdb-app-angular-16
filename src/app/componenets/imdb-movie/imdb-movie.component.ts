@@ -6,10 +6,10 @@ import {
 import { MoviesIMDBService } from './../../services/movies-imdb.service';
 import { FilterUtilService, ISortField } from 'src/app/services/filter-util.service';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { take } from 'rxjs/operators';
+import { take, takeUntil } from 'rxjs/operators';
 import { ImdbItem } from 'src/app/interfaces/imdb-item.interface';
 import { ImdbApiService } from 'src/app/services/imdb-api.service';
-import { firstValueFrom } from 'rxjs';
+import { Subject, firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-imdb-movie',
@@ -24,6 +24,8 @@ export class ImdbMovieComponent implements OnInit, OnDestroy {
   filterData = null;;
 
   data: Array<ImdbItem> = [];
+  viewData: Array<ImdbItem> = [];
+  destroyed = new Subject();
 
   constructor(
     public moviesService: MoviesIMDBService,
@@ -32,14 +34,15 @@ export class ImdbMovieComponent implements OnInit, OnDestroy {
     public filterUtilService:FilterUtilService) {}
 
   ngOnInit() {
-    // this.data = this.moviesService.data;
-    this.moviesService.data$.subscribe(res => {
-      this.data = res;
+    this.moviesService.data$.pipe(takeUntil(this.destroyed)).subscribe(res => {
+      this.spinner.hide();
+      this.data = this.viewData = res;
     })
   }
 
   ngOnDestroy(){
-    // this.moviesService.saveData();
+    this.destroyed.next(true);
+    this.destroyed.complete();
   }
 
   public files: NgxFileDropEntry[] = [];
@@ -47,22 +50,14 @@ export class ImdbMovieComponent implements OnInit, OnDestroy {
   public dropped(files: NgxFileDropEntry[]) {
     this.files = files;
     this.spinner.show();
+    const fileEntrys = [];
     for (const droppedFile of files) {
       if (droppedFile.fileEntry.isFile) {
         const fileEntry = droppedFile.fileEntry as FileSystemFileEntry;
-        this.moviesService.extractNames(fileEntry);
+        fileEntrys.push(fileEntry);
       }
     }
-
-    // console.log('////////////////FINISH//////////////');
-    // console.log(this.tvsService.tvsNameMap);
-
-    this.moviesService.getData();
-
-    this.moviesService.fetchingDataStatus.pipe(take(1)).subscribe(res => {
-      this.data = this.moviesService.data;
-      this.spinner.hide();
-    })
+    this.moviesService.getData(fileEntrys);
   }
 
 
@@ -77,37 +72,34 @@ export class ImdbMovieComponent implements OnInit, OnDestroy {
 
   onChangeSort(){
     if(!this.selectedSort){
-      this.data = this.moviesService.data;
+      this.viewData = this.data;
     } else {
-      this.data = this.filterUtilService.sortBy(this.selectedSort, this.moviesService.data);
+      this.viewData = this.filterUtilService.sortBy(this.selectedSort, this.data);
       if(this.isAsc){
-        this.data  = this.data.reverse();
+        this.viewData  = this.viewData.reverse();
       }
     }
   }
 
   ascDescChange($event){
-    this.data = this.data.reverse();
+    this.viewData = this.viewData.reverse();
   }
 
   onChangeFilterInput($event){
-    this.data = this.moviesService.data;
-    this.data= this.moviesService.data.filter((movie) => {
+    this.viewData= this.data.filter((movie) => {
       return movie.Title.toLocaleLowerCase().includes($event.toLocaleLowerCase());
     });
   }
 
   onChangeGenre(){
     if(this.selectedGenre){
-      this.data = this.filterUtilService.getAllGenres(this.selectedGenre, this.moviesService.data);
-
+      this.viewData = this.filterUtilService.getAllGenres(this.selectedGenre, this.data);
     } else {
-      this.data = this.moviesService.data;
+      this.viewData = this.data;
     }
   }
 
   async remove(id: string) {
-    let res = await firstValueFrom(this.imdbApiService.delete(id));
-    this.data = this.data.filter(d => d._id !== id); // change to remove by index
+    this.moviesService.delete(id);
   }
 }

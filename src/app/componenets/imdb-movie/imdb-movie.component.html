@@ -3,11 +3,12 @@
     <div
       style="display: flex; justify-content: space-around; align-items: center"
     >
-      Count : {{ data?.length }}
+      Count : {{ viewData?.length }}
     </div>
     <button
       pButton
       type="button"
+      class="clear-data"
       label="Clear data"
       icon="pi pi-trash"
       style="margin-right: 0.25em"
@@ -58,10 +59,10 @@
     </ngx-file-drop>
   </div>
 
-  <ng-container *ngIf="data && data?.length > 0">
+  <ng-container *ngIf="viewData && viewData?.length > 0">
     <div class="card-container">
       <p-card
-        *ngFor="let movie of data; let i = index"
+        *ngFor="let movie of viewData; let i = index"
         [header]="movie.Title"
         [subheader]="movie.Released | date"
         [style]="{ width: '360px' }"
