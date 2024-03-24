@@ -11,8 +11,8 @@ import { ImdbResponse } from '../interfaces/imdb-response.interface';
   providedIn: 'root',
 })
 export class ImdbApiService {
-  // private backApi = 'https://imdb-app-nodejs.onrender.com/'; 
-  private backApi = 'http://localhost:3000/';
+  private backApi = 'https://imdb-app-nodejs.onrender.com/'; 
+  // private backApi = 'http://localhost:3000/';
 
   constructor(protected http: HttpClient) {}
 
