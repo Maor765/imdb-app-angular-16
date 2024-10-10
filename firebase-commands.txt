@@ -1,0 +1,2 @@
+firebase login --reauth
+firebase deploy --only hosting
