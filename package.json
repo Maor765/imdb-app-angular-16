@@ -5,7 +5,8 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "build2": "ng build --base-href /imdb-app-angular-16",
+    "build2-githubpages": "ng build --base-href /imdb-app-angular-16/",
+    "build2-firebase": "ng build --base-href /imdb-app-angular-16 && firebase deploy --only hosting",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
