@@ -1,2 +1,6 @@
+##local commands to deploy:
 firebase login --reauth
 firebase deploy --only hosting
+
+##firebase tutorial to create github action:
+https://firebase.google.com/docs/hosting/github-integration
