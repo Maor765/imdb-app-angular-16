@@ -1,11 +1,9 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { OmdbMovie } from '../interfaces/omdb.movie.interface';
 import { ImdbRequest } from '../interfaces/imdb-request.interface';
 import { ImdbItem } from '../interfaces/imdb-item.interface';
 import { Observable, map } from 'rxjs';
 import { ImdbResponse } from '../interfaces/imdb-response.interface';
-// import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -15,17 +13,6 @@ export class ImdbApiService {
   // private backApi = 'http://localhost:3000/';
 
   constructor(protected http: HttpClient) {}
-
-  // test() {
-  //   return this.http
-  //     .get(`https://jsonplaceholder.typicode.com/users`)
-  //     .pipe(map((res: any[]) => res.filter(r => r.name.startsWith('C')).map(r => ({name: r.name, phone: r.phone,id: r.id}))))
-  // }
-
-  // test2(id) {
-  //   return this.http
-  //     .get(`https://jsonplaceholder.typicode.com/posts?id=${id}`)
-  // }
 
   getHeaders() {
     let headers = new HttpHeaders()
