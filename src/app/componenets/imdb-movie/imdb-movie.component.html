@@ -64,7 +64,7 @@
       <p-card
         *ngFor="let movie of viewData; let i = index"
         [header]="movie.Title"
-        [subheader]="movie.Released | date"
+        [subheader]="(movie.Released !== 'N/A' ? movie.Released : movie.Year) | date"
         [style]="{ width: '360px' }"
         styleClass="ui-card-shadow"
       >
