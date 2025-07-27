@@ -9,8 +9,8 @@ import { ImdbResponse } from '../interfaces/imdb-response.interface';
   providedIn: 'root',
 })
 export class ImdbApiService {
-  private backApi = 'https://imdb-app-nodejs.onrender.com/'; 
-  // private backApi = 'https://imdb-app-nodejs-2k5774dgz-maors-projects-62c7b1b8.vercel.app/'; 
+  private backApi = 'https://imdb-app-nodejs.onrender.com/';
+  // private backApi = 'https://imdb-app-nodejs-2k5774dgz-maors-projects-62c7b1b8.vercel.app/';
 
   // private backApi = 'http://localhost:3000/';
 
@@ -23,13 +23,13 @@ export class ImdbApiService {
     return headers;
   }
 
-  get():Observable<ImdbResponse[]> {
+  get(): Observable<ImdbResponse[]> {
     let url = this.getImdbApi();
     return this.http
       .get<ImdbResponse[]>(url, {
         headers: this.getHeaders(),
       })
-      .pipe(map((res:any) => res.data));
+      .pipe(map((res: any) => res.data));
   }
 
   create(body: ImdbRequest): Observable<ImdbItem> {
@@ -38,16 +38,16 @@ export class ImdbApiService {
       .post<ImdbItem>(url, body, {
         headers: this.getHeaders(),
       })
-      .pipe(map((res:any) => res.data));
+      .pipe(map((res: any) => res.data));
   }
 
-  createAll(body:ImdbRequest[]): Observable<ImdbItem[]> {
+  createAll(body: ImdbRequest[]): Observable<ImdbItem[]> {
     let url = this.getImdbApi(true);
     return this.http
       .post<ImdbItem[]>(url, body, {
         headers: this.getHeaders(),
       })
-      .pipe(map((res:any) => res.data));
+      .pipe(map((res: any) => res.data));
   }
 
   delete(id) {
@@ -56,7 +56,7 @@ export class ImdbApiService {
       .delete(`${url}/${id}`, {
         headers: this.getHeaders(),
       })
-      .pipe(map((res:any) => res.data));
+      .pipe(map((res: any) => res.data));
   }
 
   deleteMany(searchType: string) {
@@ -65,7 +65,7 @@ export class ImdbApiService {
       .delete(`${url}/${searchType}`, {
         headers: this.getHeaders(),
       })
-      .pipe(map((res:any) => res.data));
+      .pipe(map((res: any) => res.data));
   }
 
   getByID(id) {
@@ -74,7 +74,7 @@ export class ImdbApiService {
       .get(`${url}/${id}`, {
         headers: this.getHeaders(),
       })
-      .pipe(map((res:any) => res.data));
+      .pipe(map((res: any) => res.data));
   }
 
   getImdbApi(isList?: boolean) {
