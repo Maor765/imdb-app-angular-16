@@ -16,13 +16,16 @@ export abstract class OmdbBaseService {
     protected http: HttpClient,
     protected omdbApiService: OmdbApiService,
     private searchType: string,
-    protected imdbApiService: ImdbApiService,
+    protected imdbApiService: ImdbApiService
   ) {
-    this.imdbApiService.get().pipe(take(1)).subscribe(res => {
-      const data = res.filter( r=> r.Type === searchType);
-      this.data$.next(data);
-      this.getAllGenres();
-    })
+    this.imdbApiService
+      .get()
+      .pipe(take(1))
+      .subscribe((res) => {
+        const data = res.filter((r) => r.Type === searchType);
+        this.data$.next(data);
+        this.getAllGenres();
+      });
   }
 
   abstract getNameFromFile(fileName: string);
@@ -44,12 +47,12 @@ export abstract class OmdbBaseService {
   extractNames(fileEntrys: FileSystemFileEntry[]) {
     const nameMap: Map<string, any> = new Map();
 
-    fileEntrys.forEach(fileEntry => {
+    fileEntrys.forEach((fileEntry) => {
       const movie = this.getNameFromFile(fileEntry.name);
       if (movie && !nameMap.has(movie)) {
         nameMap.set(movie, true);
       }
-    })
+    });
 
     return nameMap;
   }
@@ -67,7 +70,8 @@ export abstract class OmdbBaseService {
       imdbID,
       Type,
     } = item;
-    return { Title,
+    return {
+      Title,
       Year,
       Released,
       Runtime,
@@ -76,13 +80,14 @@ export abstract class OmdbBaseService {
       Poster,
       imdbRating,
       imdbID,
-      Type,};
+      Type,
+    };
   }
 
   getData(fileEntry: FileSystemFileEntry[]) {
     let apiCallCount = 0;
     const data = [];
-    const nameMap = this.extractNames(fileEntry)
+    const nameMap = this.extractNames(fileEntry);
     nameMap.forEach((value, key) => {
       this.search(key).then((res: OmdbMovie) => {
         apiCallCount++;
@@ -94,9 +99,13 @@ export abstract class OmdbBaseService {
             releaseDate: moment(res.Released).format('YYYY-MM-DD'),
           });
         } else {
-          console.log('issue with tv, no results: ', key, res);
+          console.log('issue with api, no results: ', key, res);
         }
         if (apiCallCount === nameMap.size) {
+          if (!data.length) {
+            this.data$.next(this.data$.value);
+            return;
+          }
           this.getAllGenres();
           this.saveData(data);
         }
@@ -114,24 +123,33 @@ export abstract class OmdbBaseService {
   }
 
   saveData(data: Array<ImdbRequest>) {
-    this.imdbApiService.createAll(data).pipe(take(1)).subscribe(res => {
-      const data:ImdbItem[] = this.data$.value || [] ;
-      data.push(...res);
-      this.data$.next(data);
-    });
+    this.imdbApiService
+      .createAll(data)
+      .pipe(take(1))
+      .subscribe((res) => {
+        const data: ImdbItem[] = this.data$.value || [];
+        data.push(...res);
+        this.data$.next(data);
+      });
   }
 
   delete(id: string) {
-    this.imdbApiService.delete(id).pipe(take(1)).subscribe(res => {
-      let data = this.data$.value;
-      data = data.filter(d => d._id !== id);
-      this.data$.next(data);
-    });
+    this.imdbApiService
+      .delete(id)
+      .pipe(take(1))
+      .subscribe((res) => {
+        let data = this.data$.value;
+        data = data.filter((d) => d._id !== id);
+        this.data$.next(data);
+      });
   }
 
   clearData() {
-    this.imdbApiService.deleteMany(this.searchType).pipe(take(1)).subscribe(res => {
-      this.data$.next([]);
-    });
+    this.imdbApiService
+      .deleteMany(this.searchType)
+      .pipe(take(1))
+      .subscribe((res) => {
+        this.data$.next([]);
+      });
   }
 }
