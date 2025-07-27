@@ -9,8 +9,8 @@ import { ImdbResponse } from '../interfaces/imdb-response.interface';
   providedIn: 'root',
 })
 export class ImdbApiService {
-  private backApi = 'https://imdb-app-nodejs.onrender.com/';
-  // private backApi = 'https://imdb-app-nodejs-2k5774dgz-maors-projects-62c7b1b8.vercel.app/';
+  // private backApi = 'https://imdb-app-nodejs.onrender.com/';
+  private backApi = 'https://imdb-app-nodejs.vercel.app/';
 
   // private backApi = 'http://localhost:3000/';
 
