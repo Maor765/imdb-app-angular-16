@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ImdbApiService } from './services/imdb-api.service';
-import { Subject, mergeMap, of, takeUntil } from 'rxjs';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -8,32 +8,10 @@ import { Subject, mergeMap, of, takeUntil } from 'rxjs';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit, OnDestroy {
-
   destroyed = new Subject();
   constructor(public imdbApiService: ImdbApiService) {}
 
-  ngOnInit() {
-    // this.imdbApiService
-    //   .test()
-    //   .pipe(takeUntil(this.destroyed))
-    //   .subscribe((res) => {
-
-
-    //     console.log(res);
-
-    //     of(...res.map((r) => r.id)) //outer observable
-    //       .pipe(
-    //         mergeMap((id) => {
-    //           return this.imdbApiService.test2(id); //inner observable
-    //         })
-    //       )
-    //       .subscribe((data) => {
-    //         console.log(data);
-    //       });
-
-
-    //   });
-  }
+  ngOnInit() {}
 
   ngOnDestroy() {
     this.destroyed.next(true);
