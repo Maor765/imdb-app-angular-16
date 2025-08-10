@@ -1,4 +1,3 @@
-import * as moment from 'moment';
 import { BehaviorSubject, firstValueFrom, take } from 'rxjs';
 import { OmdbMovie } from '../interfaces/omdb.movie.interface';
 import { OmdbApiService } from './omdb-api.service';
@@ -7,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { ImdbApiService } from './imdb-api.service';
 import { ImdbItem } from '../interfaces/imdb-item.interface';
 import { ImdbRequest } from '../interfaces/imdb-request.interface';
+import { formatDateToYYYYMMDD } from '../helpers/helpers.utils';
 
 export abstract class OmdbBaseService {
   allGenres: { value: string }[] = [];
@@ -91,12 +91,13 @@ export abstract class OmdbBaseService {
     nameMap.forEach((value, key) => {
       this.search(key).then((res: OmdbMovie) => {
         apiCallCount++;
+        console.log(res);
         if (res.Response === 'True') {
           data.push({
             ...this.getAllNeededProps(res),
             genreList: res.Genre.split(',').map((elm) => elm.replace(' ', '')),
             runtimeMins: Number(res.Runtime.replace('min', '')),
-            releaseDate: moment(res.Released).format('YYYY-MM-DD'),
+            releaseDate: formatDateToYYYYMMDD(res.Released),
           });
         } else {
           console.log('issue with api, no results: ', key, res);
