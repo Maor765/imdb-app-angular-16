@@ -1,4 +1,4 @@
-<div class="center">
+<div *ngIf="!isLoading" class="center">
   <div class="header-actions">
     <div
       style="display: flex; justify-content: space-around; align-items: center"
@@ -79,7 +79,8 @@
           <p-chips [(ngModel)]="tv.genreList" disabled="true"></p-chips>
         </div>
         <div>{{ tv.Plot }}</div>
-
+         <span style="cursor: pointer;color:blanchedalmond;" (click)="translate(tv.Plot, i)">Translate</span>
+        <div *ngIf="!!tv.translate" style="color: aquamarine;">{{tv.translate}}</div>
         <p-footer>
           <button
             pButton
@@ -101,4 +102,7 @@
       </p-card>
     </div>
   </ng-container>
+</div>
+<div  *ngIf="isLoading" class="spinner-wrapper">
+  <div class="spinner"></div>
 </div>

@@ -9,9 +9,9 @@ export interface ImdbItem {
   imdbRating: string;
   imdbID: string;
   Type: string;
-  runtimeMins:number;
-  genreList:string[];
-  releaseDate:string;
-
+  runtimeMins: number;
+  genreList: string[];
+  releaseDate: string;
+  translate?: string;
   _id: string;
 }
