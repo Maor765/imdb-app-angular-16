@@ -79,7 +79,7 @@
         </div>
         <div>{{ movie.Plot }}</div>
         <span style="cursor: pointer;color:blanchedalmond;" (click)="translate(movie.Plot, i)">Translate</span>
-        <div *ngIf="!!movie.translate" style="color: aquamarine;">{{movie.translate}}</div>
+        <div *ngIf="!!movie.translate" style="color: aquamarine;text-align: right;">{{movie.translate}}</div>
         <p-footer>
           <button
             pButton

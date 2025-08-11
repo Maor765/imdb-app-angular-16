@@ -80,7 +80,7 @@
         </div>
         <div>{{ tv.Plot }}</div>
          <span style="cursor: pointer;color:blanchedalmond;" (click)="translate(tv.Plot, i)">Translate</span>
-        <div *ngIf="!!tv.translate" style="color: aquamarine;">{{tv.translate}}</div>
+        <div *ngIf="!!tv.translate" style="color: aquamarine;text-align: right;">{{tv.translate}}</div>
         <p-footer>
           <button
             pButton
